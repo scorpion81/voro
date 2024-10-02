@@ -11,7 +11,7 @@ endif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CXX_FLAGS)
 ########################################################################
 # User input options                                                   #
 ########################################################################
-option(VORO_BUILD_SHARED_LIBS "Build shared libs" ON)
+option(VORO_BUILD_SHARED_LIBS "Build shared libs" OFF)
 include(GNUInstallDirs)
 
 option(VORO_BUILD_EXAMPLES "Build examples" ON)
@@ -32,9 +32,13 @@ endif()
 file(GLOB VORO_SOURCES src/*.cc)
 file(GLOB NOT_VORO_SOURCES src/v_base_wl.cc src/cmd_line.cc src/voro++.cc)
 list(REMOVE_ITEM VORO_SOURCES ${NOT_VORO_SOURCES})
-add_library(voro++ ${VORO_SOURCES})
+if (${VORO_BUILD_SHARED_LIBS})
+	add_library(voro++ SHARED ${VORO_SOURCES})
+else()
+	add_library(voro++ STATIC ${VORO_SOURCES})
+endif()
 set_target_properties(voro++ PROPERTIES 
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
   SOVERSION ${SOVERSION})
 install(TARGETS voro++ EXPORT VORO_Targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #for voro++.hh
