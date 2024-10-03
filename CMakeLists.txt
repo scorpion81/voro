@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.10)
-
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0091 NEW)
 project(voro++ VERSION 0.4.6 LANGUAGES CXX)
 set(SOVERSION "0")
 
@@ -34,8 +34,14 @@ file(GLOB NOT_VORO_SOURCES src/v_base_wl.cc src/cmd_line.cc src/voro++.cc)
 list(REMOVE_ITEM VORO_SOURCES ${NOT_VORO_SOURCES})
 if (${VORO_BUILD_SHARED_LIBS})
 	add_library(voro++ SHARED ${VORO_SOURCES})
+	if (MSVC)
+		set_property(TARGET cork PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+	endif(MSVC)
 else()
 	add_library(voro++ STATIC ${VORO_SOURCES})
+	if (MSVC)
+		set_property(TARGET cork PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	endif(MSVC)
 endif()
 set_target_properties(voro++ PROPERTIES 
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
